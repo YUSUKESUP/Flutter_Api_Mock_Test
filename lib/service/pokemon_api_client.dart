@@ -1,7 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/pokemon.dart';
 
+final pokemonApiClientProvider = Provider<PokemonApiClient>(
+      (ref) => PokemonApiClient(),
+);
+
+
 class PokemonApiClient {
+
+
+
   Future<List<Pokemon>?> fetchPokemonData() async {
     final dio = Dio();
     const maxNumber = 898; // ポケモンの最大番号
