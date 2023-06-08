@@ -7,21 +7,35 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 void main() {
-  group('Repository test', () {
+  group('repository test', () {
     late ProviderContainer container;
     late DioAdapter dioAdapter;
     late PokemonApiClient apiClient;
 
-    setUp(() {
-      // テスト用の Dio をインスタンス化
+    setUp(() async {
       final dio = Dio(BaseOptions(
         validateStatus: (status) => true,
       ));
 
-      // HttpMockAdapter を使用して API リクエストをモック
-      dioAdapter = DioAdapter(dio: Dio());
+      dioAdapter = DioAdapter(dio: dio);
 
+      const path ='https://pokeapi.co/api/v2/pokemon/';
 
+      dioAdapter.onGet(
+        path,
+            (server) => server.reply(
+          200,
+          {'message': 'Success!'},
+        ),
+      );
+
+      final response = await dio.get(path);
+
+      // PokemonApiClientの初期化に必要な引数を用意する
+      final httpClient = dioAdapter;
+      final baseUrl = 'https://pokeapi.co/api/v2/pokemon/';
+
+      // PokemonApiClientを初期化する
       apiClient = PokemonApiClient();
 
       container = ProviderContainer(
@@ -30,24 +44,23 @@ void main() {
         ],
       );
     });
-
     test('fetchList 正常系', () async {
       final expectedList = [
-        Pokemon(
+        const Pokemon(
           id: 1,
-          name: 'Bulbasaur',
+          name: 'bulbasaur', // 修正
           imageUrl:
           'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
         ),
-        Pokemon(
+        const Pokemon(
           id: 2,
-          name: 'Ivysaur',
+          name: 'ivysaur', // 修正
           imageUrl:
           'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png',
         ),
-        Pokemon(
+        const Pokemon(
           id: 3,
-          name: 'Venusaur',
+          name: 'venusaur', // 修正
           imageUrl:
           'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png',
         ),
@@ -57,9 +70,9 @@ void main() {
       dioAdapter.onGet(
         'https://pokeapi.co/api/v2/pokemon?limit=151',
             (server) => server.reply(200, [
-          {'name': 'Bulbasaur', 'url': 'https://pokeapi.co/api/v2/pokemon/1/'},
-          {'name': 'Ivysaur', 'url': 'https://pokeapi.co/api/v2/pokemon/2/'},
-          {'name': 'Venusaur', 'url': 'https://pokeapi.co/api/v2/pokemon/3/'},
+          {'name': 'bulbasaur', 'url': 'https://pokeapi.co/api/v2/pokemon/1/'}, // 修正
+          {'name': 'ivysaur', 'url': 'https://pokeapi.co/api/v2/pokemon/2/'}, // 修正
+          {'name': 'venusaur', 'url': 'https://pokeapi.co/api/v2/pokemon/3/'}, // 修正
         ]),
       );
 
@@ -67,6 +80,7 @@ void main() {
 
       expect(result, equals(expectedList));
     });
+
 
     test(
       'fetchList 異常系 APIからエラーが返ってきた場合、例外がスローされる。',

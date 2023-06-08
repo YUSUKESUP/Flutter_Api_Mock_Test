@@ -1,3 +1,4 @@
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/pokemon.dart';
@@ -13,7 +14,7 @@ class PokemonApiClient {
 
   Future<List<Pokemon>?> fetchPokemonData() async {
     final dio = Dio();
-    const maxNumber = 898; // ポケモンの最大番号
+    const maxNumber = 50; // ポケモンの最大番号
     final pokemonList = <Pokemon>[]; // 空のリストを用意
 
     for (int index = 1; index <= maxNumber; index++) {
